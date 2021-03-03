@@ -1,6 +1,6 @@
 #polinomial fitting
 
-### the idea of this program is to practice f2py and try the cholesky algorithm to find the inverse of a symmetric matrix, necesary for a polinomial least squares
+### the idea of this program is to practice f2py and try the cholesky algorithm to find the inverse of a symmetric matrix, necesary for a polinomial least squares method
 
 #for calling a fortran routine from python 
 from module import module
