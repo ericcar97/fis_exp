@@ -13,7 +13,7 @@ data = pd.read_csv(file + '.csv')
 column = data.columns
 data[column[1]] = -data[column[1]] #The multimeter got an inverse measure
 fig = px.scatter(data, y = column[1])
-fig.show()
+fig.show()  #Data vusualization
 print('From: ')
 ni = input()
 print('To: ')
@@ -45,6 +45,8 @@ xfit = linspace(xmin,xmax,1000)
 yfit = V_model(xfit,fit[0],fit[1])
 
 
+#plotting
+
 fig = plt.figure(1, figsize = (8,5))
 gs = gridspec.GridSpec(2, 1, height_ratios = [6,2],
                        hspace= 0.15)
@@ -69,7 +71,6 @@ ax1.plot(xfit,yfit,lw = 0.5,
              c = 'k')
 #ax1.set_xticklabels([])
 plotStyle()
-
 
 
 #Subplot: Residuals
