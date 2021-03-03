@@ -1,0 +1,24 @@
+#polinomial fitting
+
+### the idea of this program is to practice f2py and try the cholesky algorithm to find the inverse of a symmetric matrix, necesary for a polinomial least squares
+
+#for calling a fortran routine from python 
+from module import module
+ <returned values> = module.function(<arguments>,<returned values>)
+
+#in fortran
+use <dependences>
+implicit none
+contains
+subroutine(<arguments>,<returned values>)
+    <subroutine>
+end subroutine
+
+
+#for compiling  
+>f2py3 -m module -c module.f90 dependences.f90
+copy the.so file with
+
+> mv *.so module.so
+
+#Note: always pass the dimension of an array to fortran
