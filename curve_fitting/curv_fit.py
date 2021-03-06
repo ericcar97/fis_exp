@@ -14,7 +14,7 @@ column = data.columns
 data[column[1]] = -data[column[1]] #The multimeter got an inverse measure
 fig = px.scatter(data, y = column[1])
 fig.show()  #Data vusualization
-print('From: ')
+print('From: ') #Here I pick the range of points that I want to fit with the curve, try with From 225 To 280 for the sample file
 ni = input()
 print('To: ')
 nf = input()
