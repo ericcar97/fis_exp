@@ -9,30 +9,39 @@ from pol_fit_mod import pol_fit_mod
 #importing the data
 file = 'data.dat'
 data = pd.read_csv(file)
-x_data = data['a'].values
-y_data = data['b'].values
-y_error = data['c'].values
-data_len = len(data)
+column = data.columns
+x_data = data[column[0]].values
+y_data = data[column[1]].values
+y_error = data[column[2]].values
+N = len(data)
+
 
 #polinomial fit
 pol_grade = 2
-coeff, std_dev = pol_fit_mod.pol_fit(x_data, y_data, y_error, pol_grade, data_len)
-print(coeff)
-print(std_dev)
+coeff, std_dev = pol_fit_mod.pol_fit(x_data, y_data, y_error, pol_grade, N)
 
+
+#using horner algorithm to make the polynomial function
 def horner(coeff,x):
     p = 0
     for i in range (0,pol_grade + 1):
         p = coeff[pol_grade - i] + x*p
     return p
 
-data_len = data_len - 1
+
 residuals = y_data - horner(coeff,x_data)
+
+#Results
+print(coeff)
+print(std_dev)
+
+
+
+#plotting
 x_min = x_data[0] - (x_data[1] - x_data[0])/2
-x_max = x_data[data_len] + (x_data[data_len]- x_data[data_len-1])/2
+x_max = x_data[N-1] + (x_data[N-1]- x_data[N-2])/2
 x_fit = linspace(x_min, x_max,1000)
 y_fit = horner(coeff,x_fit)
-
 fig = plt.figure(1, figsize = (8,5))
 gs = gridspec.GridSpec(2, 1, height_ratios = [6,2],
                        hspace = 0.15)
