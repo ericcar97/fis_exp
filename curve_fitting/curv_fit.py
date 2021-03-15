@@ -6,6 +6,7 @@ from scipy.optimize import curve_fit
 from matplotlib import rc
 from numpy import *
 from tabulate import tabulate
+from scipy.stats import t
 
 ###Importing and cleaning the data
 file = 'vC_RC'
@@ -13,8 +14,8 @@ data = pd.read_csv(file + '.csv')
 column = data.columns
 data[column[1]] = -data[column[1]] #The multimeter got an inverse measure
 fig = px.scatter(data, y = column[1])
-fig.show()  #Data vusualization
-print('From: ') #Here I pick the range of points that I want to fit with the curve, try with From 225 To 280 for the sample file
+fig.show()
+print('From: ')  #for the sample file, try from 225 to 280
 ni = input()
 print('To: ')
 nf = input()
@@ -23,30 +24,42 @@ print(data)
 x_data = data[column[0]].values
 x_data = x_data - x_data[0]
 y_data = data[column[1]].values
-y_error = 0.05*y_data
-datalen = len(data) -1
+y_error = 0.1*y_data
+N = len(data)
 
 ###Defying the model
 def V_model(t,V,tau):
     return V*(1-exp(-t/tau))
 
-###Curve fitting
+###Model fitting
 V0, tau0 = 3. , 1.
 init_values = [V0,tau0]
 fit, covariance = curve_fit(V_model,x_data,y_data,
                             p0 = init_values,
                             absolute_sigma = True,
                             sigma = y_error)
-error = sqrt(diag(covariance))
+nu = N - 2 #### degrees of freedom = number of data points - number of parameters fitted
+std_dev = sqrt(diag(covariance))
 residuals = y_data - V_model(x_data,fit[0],fit[1])
+std_error = sqrt(diag(covariance)*sum(residuals**2)/nu)
+
+#Confidence interval IC
+alpha = 0.05 #95%
+t = t.ppf(1-alpha/2, df = nu)
+
+#Results
+print('results: ', fit)
+print('standar deviations: ', std_dev)
+print('standar error: ', std_error)
+print('adjusted standard error with t distribution: ', std_error*t)
+print('Confidence interval: ', fit - std_error*t, 'to', fit + std_error*t)
+
+
+#Plotting
 xmin = (x_data[0]- x_data[1])*2
-xmax = x_data[datalen]+(x_data[datalen] - x_data[datalen - 1])*2
+xmax = x_data[N-1]+(x_data[N-1] - x_data[N-2])*2
 xfit = linspace(xmin,xmax,1000)
 yfit = V_model(xfit,fit[0],fit[1])
-
-
-#plotting
-
 fig = plt.figure(1, figsize = (8,5))
 gs = gridspec.GridSpec(2, 1, height_ratios = [6,2],
                        hspace= 0.15)
@@ -71,7 +84,6 @@ ax1.plot(xfit,yfit,lw = 0.5,
              c = 'k')
 #ax1.set_xticklabels([])
 plotStyle()
-
 
 #Subplot: Residuals
 ax2 = fig.add_subplot(gs[1])
