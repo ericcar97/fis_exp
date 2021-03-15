@@ -8,8 +8,8 @@ from numpy import *
 from scipy.stats import t
 
 #importing and cleaning the data
-file = 'data'
-data = pd.read_csv(file + 'csv')
+file = 'data.csv'
+data = pd.read_csv(file)
 column = data.columns
 fig = px.scatter(data,y = column)
 fig.show()
@@ -21,17 +21,28 @@ data = data.loc[ni:nf]
 x_data = data[column[0]].values
 y_data = data[column[1]].values
 y_error = data[column[2]].values
-data_len = len(data)
+N = len(data)
 
 # Linear Regression
-#a, b, sa, sb, r_squared, sigma  = lin_fit_mod.w_lin_fit(x_data, y_data, y_error, data_len)  #Weighted linear regression
-a, b, sa, sb, r_squared, sigma  = lin_fit_mod.s_lin_fit(x_data, y_data, data_len)   #Simple linear regression
+#a, b, sa, sb, r_squared, sigma  = lin_fit_mod.w_lin_fit(x_data, y_data, y_error, N)  #Weighted linear regression
+a, b, sa, sb, r_squared, sigma  = lin_fit_mod.s_lin_fit(x_data, y_data, N)   #Simple linear regression
 residuals = y_data - (a*x_data + b)
 
-data_len = data_len - 1
+#t-student distribution
+alpha = 0.05
+t = t.ppf(1-alpha/2, df = N - 2)
+
+#Results
+print('number of points: ', N)
+print('slope: ', a)
+print('intercept: ', b)
+print('standar desviation of the slope: ', sa)
+print('standar desviation of the intercept: ', sb)
+print('a uncertainty: ' ,sa * t)
+
 #plotting
 x_min = x_data[0] - (x_data[1] - x_data[0])/2
-x_max = x_data[data_len] + (x_data[data_len]- x_data[data_len - 1])/2
+x_max = x_data[N-1] + (x_data[N-1]- x_data[N-2])/2
 x_fit = linspace(x_min,x_max,1000)
 y_fit = a*x_fit + b
 
@@ -60,4 +71,4 @@ ax2.set_xlabel('Variable dependiente')
 ax2.set_ylabel('Residuos')
 ax2.scatter(x_data, residuals, c = 'r')
 plotStyle()
-plt.savefig(file + '.eps')
+plt.savefig('plot.eps')
